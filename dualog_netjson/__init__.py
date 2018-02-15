@@ -41,7 +41,7 @@ class ForwardingConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrt
         result.setdefault('firewall', [])
         rule = dict(block)
         rule['.type'] = 'forwarding'
-        rule['.name'] = "%(src)s-%(dest)s" % rule
+        rule['.name'] = "%(src)s_%(dest)s" % rule
         result['firewall'].append(rule)
         return result
 
