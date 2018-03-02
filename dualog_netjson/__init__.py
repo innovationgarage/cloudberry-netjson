@@ -22,7 +22,7 @@ class ZoneConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConver
         rule = dict(block)
         rule['.type'] = 'zone'
         rule['.name'] = rule['name']
-        rule['network'] = ' '.join(rule['network'])
+        if 'network' in rule: rule['network'] = ' '.join(rule['network'])
         result['firewall'].append(rule)
         return result
 
@@ -54,6 +54,7 @@ class OpenWrt(netjsonconfig.OpenWrt):
                 "type": "object",
                 "properties": {
                     "name": {"type": "string"},
+                    "device": {"type": "string"},
                     "network": {"type": "array", "items": {"type": "string"}},
                     "output": {"type": "string", "enum": ["ACCEPT", "DENY"]},
                     "input": {"type": "string", "enum": ["ACCEPT", "DENY"]},
