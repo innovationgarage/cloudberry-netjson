@@ -7,17 +7,8 @@ from collections import OrderedDict
 
 class ZoneConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConverter):
     netjson_key = 'zones'
-    
-    # @classmethod
-    # def should_run_forward(cls, config):
-    #     return True
 
-    # @classmethod
-    # def should_run_backward(cls, intermediate_data):
-    #     return True
-
-    def to_intermediate_loop(self, block, result, index=None):
-        
+    def to_intermediate_loop(self, block, result, index=None):        
         result.setdefault('firewall', [])
         rule = dict(block)
         rule['.type'] = 'zone'
@@ -28,14 +19,6 @@ class ZoneConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConver
 
 class ForwardingConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConverter):
     netjson_key = 'forwarding'
-    
-    # @classmethod
-    # def should_run_forward(cls, config):
-    #     return True
-
-    # @classmethod
-    # def should_run_backward(cls, intermediate_data):
-    #     return True
 
     def to_intermediate_loop(self, block, result, index=None):
         result.setdefault('firewall', [])
@@ -45,7 +28,16 @@ class ForwardingConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrt
         result['firewall'].append(rule)
         return result
 
-    
+class ContainerConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConverter):
+    netjson_key = 'containers'
+
+    def to_intermediate_loop(self, block, result, index=None):
+        result.setdefault('containers', [])
+        rule = dict(block)
+        rule['.type'] = 'container'
+        rule['.name'] = "%(uuid)s" % rule
+        result['containers'].append(rule)
+        return result
 
 class OpenWrt(netjsonconfig.OpenWrt):
     schema = netjsonconfig.utils.merge_config(netjsonconfig.OpenWrt.schema, {
@@ -68,6 +60,17 @@ class OpenWrt(netjsonconfig.OpenWrt):
                     "src": {"type": "string"},
                     "dest": {"type": "string"}
                 }
+            },
+            "container": {
+                "type": "object",
+                "properties": {
+                    "uuid": {"type": "string"},
+                    "key": {"type": "string"},
+                    "ports": {
+                        "type": "array",
+                        "items": {"type": "integer"}
+                    }
+                }
             }
         },
         "properties": {
@@ -80,8 +83,13 @@ class OpenWrt(netjsonconfig.OpenWrt):
                 "type": "array",
                 "title": "Forwarding",
                 "items": { "$ref": "#/definitions/forwarding" }
+            },
+            "containers": {
+                "type": "array",
+                "title": "Containers",
+                "items": { "$ref": "#/definitions/container" }
             }
         }
     })
-    converters = netjsonconfig.OpenWrt.converters + [ZoneConverter, ForwardingConverter]
+    converters = netjsonconfig.OpenWrt.converters + [ZoneConverter, ForwardingConverter, ContainerConverter]
     
