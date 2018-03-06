@@ -5,8 +5,9 @@ import json
 from collections import OrderedDict
 
 
-class ZoneConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConverter):
+class ZoneConverter(netjsonconfig.backends.base.converter.BaseConverter):
     netjson_key = 'zones'
+    intermediate_key = 'firewall'
 
     def to_intermediate_loop(self, block, result, index=None):        
         result.setdefault('firewall', [])
@@ -17,8 +18,20 @@ class ZoneConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConver
         result['firewall'].append(rule)
         return result
 
-class ForwardingConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConverter):
+    def should_skip_block(self, block):
+        return block.get(".type") != 'zone'
+
+    def to_netjson_loop(self, block, result, index=None):
+        result.setdefault('zones', [])
+        block.pop(".type")
+        block.pop(".name")
+        if 'network' in block: block['network'] = block['network'].split(" ")
+        result['zones'].append(block)
+        return result
+    
+class ForwardingConverter(netjsonconfig.backends.base.converter.BaseConverter):
     netjson_key = 'forwarding'
+    intermediate_key = 'firewall'
 
     def to_intermediate_loop(self, block, result, index=None):
         result.setdefault('firewall', [])
@@ -28,17 +41,37 @@ class ForwardingConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrt
         result['firewall'].append(rule)
         return result
 
-class ContainerConverter(netjsonconfig.backends.openwrt.converters.base.OpenWrtConverter):
+    def should_skip_block(self, block):
+        return block.get(".type") != 'forwarding'
+
+    def to_netjson_loop(self, block, result, index=None):
+        result.setdefault('forwarding', [])
+        block.pop(".type")
+        block.pop(".name")
+        result['forwarding'].append(block)
+        return result
+    
+class ContainerConverter(netjsonconfig.backends.base.converter.BaseConverter):
     netjson_key = 'containers'
+    intermediate_key = 'containers'
 
     def to_intermediate_loop(self, block, result, index=None):
         result.setdefault('containers', [])
         rule = dict(block)
         rule['.type'] = 'container'
-        rule['.name'] = "%(uuid)s" % rule
+        rule['.name'] = rule['uuid']
         result['containers'].append(rule)
         return result
 
+    def to_netjson_loop(self, block, result, index=None):
+        result.setdefault('containers', [])
+        block.pop(".type")
+        block.pop(".name")
+        if 'ports' in block:
+            block['ports'] = [int(port) for port in block['ports']]
+        result['containers'].append(block)
+        return result
+        
 class OpenWrt(netjsonconfig.OpenWrt):
     schema = netjsonconfig.utils.merge_config(netjsonconfig.OpenWrt.schema, {
         "definitions": {
@@ -91,5 +124,5 @@ class OpenWrt(netjsonconfig.OpenWrt):
             }
         }
     })
-    converters = netjsonconfig.OpenWrt.converters + [ZoneConverter, ForwardingConverter, ContainerConverter]
+    converters = [ZoneConverter, ForwardingConverter, ContainerConverter] + netjsonconfig.OpenWrt.converters
     
