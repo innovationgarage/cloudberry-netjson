@@ -2,7 +2,7 @@
 
 import setuptools
 
-setuptools.setup(name='dualog-netjson',
+setuptools.setup(name='cloudberry-netjson',
       version='0.1',
       description='Cloudberry netjson extensions',
       author='Egil Moeller',
