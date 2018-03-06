@@ -23,12 +23,19 @@ class Tests(object):
     }
     container_json = {
         'type': 'DeviceConfiguration',
-        "containers": [{
-            "uuid": "abc123",
-            "key": "123abc",
-            "ports": [{"host": 4711, "guest": 4712, "proto": "tcp"},
-                      {"host": 4713, "guest": 4713, "proto": "tcp"}]
-        }]
+        "containers": [
+            {
+                "uuid": "abc123",
+                "key": "123abc",
+                "ports": [{"host": 4711, "guest": 4712, "proto": "tcp"},
+                          {"host": 4713, "guest": 4713, "proto": "tcp"}]
+            },
+            {
+                "uuid": "abc123",
+                "key": "123abc",
+                "image": "openwrt-lede"
+            }
+        ]
     }
 
     def test_zone(self):

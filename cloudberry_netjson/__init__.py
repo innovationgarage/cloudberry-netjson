@@ -120,6 +120,7 @@ class OpenWrt(netjsonconfig.OpenWrt):
                 "properties": {
                     "uuid": {"type": "string"},
                     "key": {"type": "string"},
+                    "image": {"type": "string"},
                     "ports": {
                         "type": "array",
                         "items": { "$ref": "#/definitions/container-port" }
