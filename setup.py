@@ -9,6 +9,9 @@ setuptools.setup(name='dualog-netjson',
       author_email='egil@innovationgarage.no',
       url='https://github.com/innovationgarage/cloudberry-netjson',
       packages=setuptools.find_packages(),
-      install_requires=[],
+      install_requires=[
+          "requests",
+          "netjsonconfig"
+      ],
       include_package_data=True
   )
