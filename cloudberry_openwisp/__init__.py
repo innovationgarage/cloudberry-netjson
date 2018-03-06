@@ -17,7 +17,10 @@ class Config(object):
         if os.path.exists(self.path):
             with open(self.path) as f:
                 self.config = json.load(f)
-
+        elif base_url is not None:
+            with open(self.path, "w") as f:
+                json.dump(self.config, f)
+                 
     @property
     def base_url(self):
         return self.config['base_url']
