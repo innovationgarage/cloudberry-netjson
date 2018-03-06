@@ -4,10 +4,10 @@ import setuptools
 
 setuptools.setup(name='dualog-netjson',
       version='0.1',
-      description='Dualog netjson extensions',
+      description='Cloudberry netjson extensions',
       author='Egil Moeller',
       author_email='egil@innovationgarage.no',
-      url='https://github.com/innovationgarage/dualog_netjson',
+      url='https://github.com/innovationgarage/cloudberry-netjson',
       packages=setuptools.find_packages(),
       install_requires=[],
       include_package_data=True

@@ -1,4 +1,4 @@
-import dualog_netjson
+import cloudberry_netjson
 import json
 
 class Tests(object):
@@ -31,19 +31,19 @@ class Tests(object):
     }
 
     def test_zone(self):
-        parsed = json.loads(dualog_netjson.OpenWrt(
-            native=dualog_netjson.OpenWrt(self.zone_json).generate()
+        parsed = json.loads(cloudberry_netjson.OpenWrt(
+            native=cloudberry_netjson.OpenWrt(self.zone_json).generate()
         ).json())
         assert parsed == self.zone_json
         
     def test_forwarding(self):
-        parsed = json.loads(dualog_netjson.OpenWrt(
-            native=dualog_netjson.OpenWrt(self.forwarding_json).generate()
+        parsed = json.loads(cloudberry_netjson.OpenWrt(
+            native=cloudberry_netjson.OpenWrt(self.forwarding_json).generate()
         ).json())
         assert parsed == self.forwarding_json
 
     def test_container(self):
-        parsed = json.loads(dualog_netjson.OpenWrt(
-            native=dualog_netjson.OpenWrt(self.container_json).generate()
+        parsed = json.loads(cloudberry_netjson.OpenWrt(
+            native=cloudberry_netjson.OpenWrt(self.container_json).generate()
         ).json())
         assert parsed == self.container_json
