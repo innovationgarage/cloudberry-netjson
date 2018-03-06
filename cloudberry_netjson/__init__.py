@@ -60,6 +60,13 @@ class ContainerConverter(netjsonconfig.backends.base.converter.BaseConverter):
         rule = dict(block)
         rule['.type'] = 'container'
         rule['.name'] = rule['uuid']
+        if 'ports' in rule:
+            rule['ports'] = [
+                "%s/%s: %s" % (
+                    port.get('host', port.get("guest")),
+                    port.get("proto", "tcp"),
+                    port.get("guest"))
+                for port in rule['ports']]
         result['containers'].append(rule)
         return result
 
@@ -68,7 +75,13 @@ class ContainerConverter(netjsonconfig.backends.base.converter.BaseConverter):
         block.pop(".type")
         block.pop(".name")
         if 'ports' in block:
-            block['ports'] = [int(port) for port in block['ports']]
+            def parse_port(port):
+                host, guest = port.split(": ")
+                host, proto = host.split("/")
+                return {"host": int(host),
+                        "guest": int(guest),
+                        "proto": proto} 
+            block['ports'] = [parse_port(port) for port in block['ports']]
         result['containers'].append(block)
         return result
         
@@ -94,6 +107,14 @@ class OpenWrt(netjsonconfig.OpenWrt):
                     "dest": {"type": "string"}
                 }
             },
+            "container-port": {
+                "type": "object",
+                "properties": {
+                    "host": {"type": "integer"},
+                    "guest": {"type": "integer"},
+                    "proto": {"type": "string", "enum": ["tcp", "udp"]}
+                }
+            },
             "container": {
                 "type": "object",
                 "properties": {
@@ -101,7 +122,7 @@ class OpenWrt(netjsonconfig.OpenWrt):
                     "key": {"type": "string"},
                     "ports": {
                         "type": "array",
-                        "items": {"type": "integer"}
+                        "items": { "$ref": "#/definitions/container-port" }
                     }
                 }
             }

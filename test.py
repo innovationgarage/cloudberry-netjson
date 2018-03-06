@@ -26,7 +26,8 @@ class Tests(object):
         "containers": [{
             "uuid": "abc123",
             "key": "123abc",
-            "ports": [4711, 4712]
+            "ports": [{"host": 4711, "guest": 4712, "proto": "tcp"},
+                      {"host": 4713, "guest": 4713, "proto": "tcp"}]
         }]
     }
 
