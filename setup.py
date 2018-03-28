@@ -3,7 +3,7 @@
 import setuptools
 
 setuptools.setup(name='cloudberry-netjson',
-      version='0.1',
+      version='0.1.1',
       description='Cloudberry netjson extensions',
       author='Egil Moeller',
       author_email='egil@innovationgarage.no',

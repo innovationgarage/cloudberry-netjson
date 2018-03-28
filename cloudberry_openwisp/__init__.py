@@ -35,9 +35,10 @@ class Config(object):
 
     def update(self):
         r = requests.get("%s/controller/checksum/%s/?key=%s" % (self.base_url, self.uuid, self.key))
-        if 'data' in self.config and self.config['data']['checksum'] == r.content:
+        checksum = r.content.decode("utf-8")
+        if 'data' in self.config and self.config['data']['checksum'] == checksum:
             return
-        data = {"checksum": r.content, "config": {}}
+        data = {"checksum": checksum, "config": {}}
         
         r = requests.get("%s/controller/download-config/%s/?key=%s" % (self.base_url, self.uuid, self.key))
 
